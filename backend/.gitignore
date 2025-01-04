@@ -1,0 +1,49 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.DS_Store
+
+# Logs
+logs
+*.log
+logs/*.log
+
+# Build outputs
+dist/
+build/
+public/
+
+# MongoDB
+*.lock
+*.log
+*.pid
+data/
+dump/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Go
+*.exe
+*.out
+*.test
+bin/
+vendor/
+go.sum
+go.mod
+.env
+app.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.orig
+*.~*
+
+real-time-chat-app
