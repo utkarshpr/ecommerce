@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Alerts from '../Fragments/Alert';
 
 const Login= () => {
 
@@ -13,6 +14,10 @@ const Login= () => {
   });
 
   const [error, setError] = useState('');
+  const [alert, setAlert] = useState({
+    severity: '', // 'success', 'error', etc.
+    message: ''
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +41,10 @@ const Login= () => {
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.message || 'Failed to login');
+        setAlert({
+          severity: 'error',
+          message: data.message || 'Failed to login'
+        });
       } else {
         const data = await response.json();
         if (data.Status) {
@@ -46,11 +54,19 @@ const Login= () => {
   
           // Call login to update state in context
           login();
-  
-          // Redirect to home page after successful login
-          navigate('/home');
+          
+          setAlert({
+            severity: 'success',
+            message: 'Login successful! Redirecting...'
+          });
+
+          // Redirect to home page after a short delay
+          setTimeout(() => navigate('/home'), 1500);
         } else {
-          setError('Login failed');
+          setAlert({
+            severity: 'error',
+            message: 'Login failed'
+          });
         }
       }
     } catch (error) {
@@ -59,10 +75,19 @@ const Login= () => {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Login</h1>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+    <div className=" bg-gray-500 ">
+     
+      <div className="flex flex-col items-center justify-center p-5">
+      
+      {alert.message && (
+          <div className="mb-4">
+            <Alerts severity={alert.severity} message={alert.message} />
+          </div>
+        )}
       <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 className="text-2xl font-bold text-gray-800 text-center">
+          Login Form
+        </h2>
         <input
           type="text"
           name="username"
@@ -83,6 +108,8 @@ const Login= () => {
           Login
         </button>
       </form>
+       
+    </div>
     </div>
   );
 };

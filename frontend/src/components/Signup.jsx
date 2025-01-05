@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Alerts from "../Fragments/Alert";
+import { useNavigate } from "react-router-dom";
 
 function SignupPage() {
   const [formData, setFormData] = useState({
@@ -24,6 +26,12 @@ function SignupPage() {
       },
     ],
   });
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); 
+  const [alert, setAlert] = useState({
+      severity: '', // 'success', 'error', etc.
+      message: ''
+    });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,48 +69,73 @@ function SignupPage() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Validation Error:", errorData.message || "Unknown error");
-        alert(errorData.message || "Validation failed!");
+        setAlert({
+          severity: 'error',
+          message: errorData.message || ' : Validation Error'
+        });
        return
       }
 
       const data = await response.json();
-      console.log(data.message);
+      // console.log(data.message);
       
-      alert("Signup successful: ",data );
+      // alert("Signup successful: ",data );
+      setAlert({
+        severity: 'success',
+        message: 'Signup successful! Redirecting...'
+      });
+
+      // Redirect to home page after a short delay
+      setTimeout(() => navigate('/login'), 1500);
     } catch (error) {
       console.error("Error:", error);
-      alert("Signup failed: " + error.message);
+      // alert("Signup failed: " + error.message);
+      setAlert({
+        severity: 'error',
+        message: error.message
+      });
     }
   };
+  
 
   return (
     <div className=" bg-gray-500 ">
-      <div className="flex flex-row items-center justify-center p-5">
-      <form
+     
+      <div className="flex flex-col items-center justify-center p-5">
+      
+      {alert.message && (
+          <div className="mb-4">
+            <Alerts severity={alert.severity} message={alert.message} />
+          </div>
+        )}
+         <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg space-y-6"
+        className=" space-y-4  w-1/2"
       >
+       
         <h2 className="text-2xl font-bold text-gray-800 text-center">
           Signup Form
         </h2>
 
         <div>
-          <label className="block text-gray-700 font-medium">Username</label>
+          {/* <label className="block text-gray-700 font-medium">Username</label> */}
           <input
             type="text"
             name="username"
+            placeholder="Username"
             value={formData.username}
             onChange={handleChange}
             required
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-2 border rounded"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">Email</label>
+          {/* <label className="block text-gray-700 font-medium">Email</label> */}
           <input
             type="email"
             name="email"
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
             required
@@ -111,10 +144,11 @@ function SignupPage() {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">Password</label>
+          {/* <label className="block text-gray-700 font-medium">Password</label> */}
           <input
             type="password"
             name="password"
+            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
             required
@@ -125,10 +159,11 @@ function SignupPage() {
        
 
         <div>
-          <label className="block text-gray-700 font-medium">First Name</label>
+          {/* <label className="block text-gray-700 font-medium">First Name</label> */}
           <input
             type="text"
             name="first_name"
+            placeholder="First Name"
             value={formData.first_name}
             onChange={handleChange}
             required
@@ -137,10 +172,11 @@ function SignupPage() {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">Last Name</label>
+          {/* <label className="block text-gray-700 font-medium">Last Name</label> */}
           <input
             type="text"
             name="last_name"
+            placeholder="Last Name"
             value={formData.last_name}
             onChange={handleChange}
             required
@@ -148,10 +184,11 @@ function SignupPage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 font-medium">Last Name</label>
+          {/* <label className="block text-gray-700 font-medium">Last Name</label> */}
           <input
             type="number"
             name="phone_number"
+            placeholder="Phone Number"
             value={formData.phone_number}
             onChange={handleChange}
             required
@@ -160,7 +197,7 @@ function SignupPage() {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">Role</label>
+          {/* <label className="block text-gray-700 font-medium">Role</label> */}
           <select
             name="role"
             value={formData.role}
@@ -175,7 +212,7 @@ function SignupPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700">Gender</label>
+          {/* <label className="block text-gray-700">Gender</label> */}
           <select
             name="gender"
             value={formData.gender}
@@ -192,9 +229,10 @@ function SignupPage() {
         <h3 className="text-lg font-semibold text-gray-800 mt-4">Address</h3>
 
         <div>
-          <label className="block text-gray-700 font-medium">Street</label>
+          {/* <label className="block text-gray-700 font-medium">Street</label> */}
           <input
             type="text"
+            placeholder="Street or Landmark"
             name="address.street"
             value={formData.address[0].street}
             onChange={handleChange}
@@ -203,10 +241,11 @@ function SignupPage() {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">City</label>
+          {/* <label className="block text-gray-700 font-medium">City</label> */}
           <input
             type="text"
             name="address.city"
+            placeholder="City and State"
             value={formData.address[0].city}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
@@ -214,10 +253,11 @@ function SignupPage() {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium">Country</label>
+          {/* <label className="block text-gray-700 font-medium">Country</label> */}
           <input
             type="text"
             name="address.country"
+            placeholder="Country"
             value={formData.address[0].country}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
