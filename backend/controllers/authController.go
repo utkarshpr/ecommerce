@@ -53,7 +53,7 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
+	logger.LogInfo(user)
 	// validation
 	err = validation.SignUpUserValidation(&user)
 	if err != nil {
@@ -116,6 +116,7 @@ func LoginController(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.LogInfo(user)
 	// validation
 	err = validation.LoginUserValidation(&user)
 	if err != nil {

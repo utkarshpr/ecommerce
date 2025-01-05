@@ -29,7 +29,7 @@ func InitLogger(logFile string) {
 }
 
 // LogInfo logs an info-level message
-func LogInfo(message string) {
+func LogInfo(message interface{}) {
 	if Logger != nil {
 		Logger.Println("INFO:", message)
 	} else {
