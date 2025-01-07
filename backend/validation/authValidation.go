@@ -2,6 +2,7 @@ package validation
 
 import (
 	"errors"
+	"fmt"
 
 	"regexp"
 	"unicode"
@@ -35,7 +36,8 @@ func SignUpUserValidation(user *models.User) error {
 		return errors.New("gender is required")
 	}
 
-	if user.PhoneNumber == "" && len(user.PhoneNumber) != 10 {
+	fmt.Println(user.PhoneNumber == "" && !(len(user.PhoneNumber) == 10))
+	if user.PhoneNumber == "" && !(len(user.PhoneNumber) == 10) {
 		return errors.New("phone number is required")
 	}
 

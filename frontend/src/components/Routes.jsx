@@ -11,7 +11,8 @@ const RoutesComponent = () => {
   return (
     
       <div className="container mx-auto mt-10">
-        <Routes> {/* Define Routes for Login and Signup */}
+        <Routes> 
+        <Route path="/" element={<Home />} /> 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/home" element={<Home />} />
