@@ -126,7 +126,7 @@ function SignupPage() {
         )}
         <form
           onSubmit={handleSubmit}
-          className=" space-y-4  w-1/2 shadow-md p-5"
+          className=" space-y-4  w-1/2 shadow-md p-5  bg-gray-200"
         >
           <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6 font-sans">
             Signup 
@@ -154,7 +154,7 @@ function SignupPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 
@@ -167,7 +167,7 @@ function SignupPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
             <div className=" flex flex-row justify-end items-end">
               <button
@@ -189,7 +189,7 @@ function SignupPage() {
               value={formData.first_name}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 
@@ -202,7 +202,7 @@ function SignupPage() {
               value={formData.last_name}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
           <div>
@@ -214,7 +214,7 @@ function SignupPage() {
               value={formData.phone_number}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 
@@ -225,7 +225,7 @@ function SignupPage() {
               value={formData.role}
               onChange={handleChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             >
               <option value="">Select Role</option>
               <option value="ADMIN">Admin</option>
@@ -258,7 +258,7 @@ function SignupPage() {
               name="address.street"
               value={formData.address[0].street}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 
@@ -270,7 +270,7 @@ function SignupPage() {
               placeholder="City and State"
               value={formData.address[0].city}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 
@@ -282,7 +282,7 @@ function SignupPage() {
               placeholder="Country"
               value={formData.address[0].country}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
           </div>
 

@@ -87,14 +87,14 @@ const Login = () => {
   };
 
   return (
-    <div className=" ">
-      <div className="flex flex-col items-center justify-center p-5">
+    <div className="">
+      <div className="flex flex-col items-center justify-center p-5 ">
         {alert.message && (
           <div className="mb-4">
             <Alerts severity={alert.severity} message={alert.message} />
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4  w-1/2 shadow-md p-5">
+        <form onSubmit={handleSubmit} className="space-y-4  w-1/2 shadow-md p-5 bg-gray-200" >
           <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6 font-sans">
             Login 
           </h2>
@@ -104,7 +104,7 @@ const Login = () => {
             placeholder="Username"
             value={credentials.username}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
           <div className="">
             <input
@@ -113,7 +113,7 @@ const Login = () => {
               placeholder="Password"
               value={credentials.password}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
             <div className=" flex flex-row justify-end items-end">
             <button
