@@ -89,7 +89,7 @@ const ProfilePage = () => {
     }, 5000); // Alert will disappear after 5 seconds
   };
   return (
-    <div className="container mx-auto p-6 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white rounded-lg shadow-lg max-w-3xl mt-8 animate__animated animate__fadeIn">
+    <div className="container mx-auto p-6 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 text-white rounded-lg shadow-lg max-w-3xl mt-8 animate__animated animate__fadeIn">
       <h1 className="text-3xl font-semibold text-center mb-6">Profile</h1>
 
       {alert && <Alerts severity={alert.severity} message={alert.message} />}
