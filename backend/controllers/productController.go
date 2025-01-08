@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/utkarshpr/ecommerce/logger"
 	"github.com/utkarshpr/ecommerce/models"
+
 	"github.com/utkarshpr/ecommerce/services"
 	"github.com/utkarshpr/ecommerce/validation"
 )
@@ -80,4 +81,46 @@ func AddProductController(c *gin.Context) {
 		models.ManageResponse(c.Writer, "ADMIN role is required for adding the product", http.StatusBadRequest, nil, false)
 	}
 	logger.LogInfo("AddProductController :: ending")
+}
+
+func GetProductController(c *gin.Context) {
+	logger.LogInfo("GetProductController :: started")
+	if c.Request.Method != "GET" {
+		logger.LogError("GetProductController :: GET method is required")
+		models.ManageResponse(c.Writer, "Get method is required", http.StatusBadRequest, nil, false)
+		return
+	}
+	resp, err := services.GetAllProduct()
+	if err != nil {
+		logger.LogError("GetProductController :: error in fetching data" + err.Error())
+		models.ManageResponse(c.Writer, err.Error(), http.StatusBadRequest, nil, false)
+		return
+	}
+	models.ManageResponse(c.Writer, "Fetch successfully", http.StatusOK, resp, true)
+	logger.LogInfo("GetProductController :: ending")
+}
+
+func GetSpecificProductController(c *gin.Context) {
+	logger.LogInfo("GetSpecificProductController :: started")
+	if c.Request.Method != "GET" {
+		logger.LogError("GetSpecificProductController :: GET method is required")
+		models.ManageResponse(c.Writer, "Get method is required", http.StatusBadRequest, nil, false)
+		return
+	}
+	id := c.DefaultQuery("id", "")
+	if len(id) < 1 {
+		logger.LogError("please provide the id in query parameter")
+		models.ManageResponse(c.Writer, "please provide the id in query parameter ", http.StatusNotAcceptable, nil, false)
+		c.Abort()
+		return
+	}
+
+	resp, err := services.GetSpecificProduct(id)
+	if err != nil {
+		logger.LogError("GetSpecificProductController :: error in fetching data" + err.Error())
+		models.ManageResponse(c.Writer, err.Error(), http.StatusBadRequest, nil, false)
+		return
+	}
+	models.ManageResponse(c.Writer, "Fetch successfully", http.StatusOK, resp, true)
+	logger.LogInfo("GetSpecificProductController :: ending")
 }

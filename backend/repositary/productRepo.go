@@ -11,6 +11,7 @@ import (
 	"github.com/utkarshpr/ecommerce/logger"
 	"github.com/utkarshpr/ecommerce/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func AddProduct(product *models.AddProduct, files []*multipart.FileHeader) error {
@@ -86,4 +87,60 @@ func UploadMedia(file multipart.File, fileHeader *multipart.FileHeader) (string,
 
 	// Return the secure URL of the uploaded media
 	return uploadResult.SecureURL, nil
+}
+
+func GetAllProduct() ([]models.AddProduct, error) {
+	logger.LogInfo("GetAllProduct Repo :: started")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var products []models.AddProduct
+
+	// Find all documents in the collection
+	cursor, err := productCollection.Find(ctx, bson.M{})
+	if err != nil {
+		logger.LogError("GetAllProduct Repo :: Error while fetching products :: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate over the cursor and decode each product into the products slice
+	for cursor.Next(ctx) {
+		var product models.AddProduct
+		if err := cursor.Decode(&product); err != nil {
+			logger.LogError("GetAllProduct Repo :: Error while decoding product :: " + err.Error())
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	// Check if there was an error in cursor iteration
+	if err := cursor.Err(); err != nil {
+		logger.LogError("GetAllProduct Repo :: Cursor error :: " + err.Error())
+		return nil, err
+	}
+
+	logger.LogInfo("GetAllProduct Repo :: end")
+	return products, nil
+}
+
+func GetSpecificProduct(id string) (*models.AddProduct, error) {
+	logger.LogInfo("GetSpecificProduct Repo :: started")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var product models.AddProduct
+
+	// Find the document with the matching ID
+	err := productCollection.FindOne(ctx, bson.M{"id": id}).Decode(&product)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			logger.LogInfo("No product found with the provided ID")
+			return nil, nil // No product found
+		}
+		logger.LogError("GetSpecificProduct Repo :: Error while fetching product :: " + err.Error())
+		return nil, err // Error while fetching product
+	}
+
+	logger.LogInfo("GetSpecificProduct Repo :: end")
+	return &product, nil
 }
