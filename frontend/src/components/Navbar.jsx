@@ -16,6 +16,9 @@ const Navbar = () => {
     const handleLogoutClick = () => {
       navigate('/logout'); // Navigate to signup page
     };
+    const handleHome = ()=>{
+      navigate('/')
+    }
     const getTokenFromCookies = () => {
       const match = document.cookie.match('(^|;)\\s*' + 'authToken' + '=([^;]+)');
       return match ? match[2] : null;
@@ -59,20 +62,20 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-800 text-white p-4 sticky top-0 z-10 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold">MyApp</div>
+        <div className="text-2xl font-bold cursor-pointer" onClick={handleHome}>MyApp</div>
 
         <div className="space-x-4">
           {!isLoggedIn ? (
             <>
               <button
                 onClick={handleLoginClick}
-                className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
               >
                 Login
               </button>
               <button
                 onClick={handleSignupClick}
-                className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
+                className="bg-green-500 px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
               >
                 Signup
               </button>
@@ -80,7 +83,7 @@ const Navbar = () => {
           ) : (
             <button
             onClick={() => setShowModal(true)}
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-500 px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
             >
               Logout
             </button>

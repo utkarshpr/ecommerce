@@ -124,3 +124,5 @@ func GetSpecificProductController(c *gin.Context) {
 	models.ManageResponse(c.Writer, "Fetch successfully", http.StatusOK, resp, true)
 	logger.LogInfo("GetSpecificProductController :: ending")
 }
+
+// edit / delete (admin)
