@@ -4,9 +4,9 @@ import CheckIcon from '@mui/icons-material/Check';
 
 const Alerts = ({ severity = 'success', message = '', icon = null }) => {
   return (
-    <Alert 
-      icon={icon || <CheckIcon fontSize="inherit" />} 
+    <Alert  
       severity={severity}
+      variant="filled"
     >
       {message || 'Default alert message'}
     </Alert>

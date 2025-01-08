@@ -31,7 +31,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 	routes.AuthRoutes(r)
-
+	routes.ProductRoute(r)
 	port := os.Getenv("PORT")
 	err := r.Run(port)
 	if err != nil {
