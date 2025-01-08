@@ -20,6 +20,7 @@ type User struct {
 	PhoneNumber string             `json:"phone_number" bson:"phone_number"`
 	Address     []Address          `json:"address" bson:"address"`
 }
+
 type Address struct {
 	Street     string `json:"street"`
 	City       string `json:"city"`
@@ -28,15 +29,15 @@ type Address struct {
 	Country    string `json:"country"`
 }
 type UpdateUserAndProfile struct {
-	Password      string `json:"password" bson:"password" `
-	AvatarURL     string `json:"avatar_url" bson:"avatar_url"`
-	StatusMessage string `json:"status_message" bson:"status_message"`
-	LastSeen      string `json:"last_seen" bson:"last_seen"`
-	FirstName     string `json:"first_name" bson:"first_name"`
-	LastName      string `json:"last_name" bson:"last_name"`
-	Address       string `json:"address" bson:"address,omitempty"`
-	DateOfBirth   string `json:"date_of_birth" bson:"date_of_birth"`
-	Role          Role   `json:"role" bson:"role"`
+	Username    string    `json:"username" bson:"username" `
+	Email       string    `json:"email" bson:"email" `
+	Password    string    `json:"password" bson:"password" `
+	FirstName   string    `json:"first_name" bson:"first_name"`
+	LastName    string    `json:"last_name" bson:"last_name"`
+	Role        Role      `json:"role" bson:"role"`
+	Gender      string    `json:"gender" bson:"gender"`
+	PhoneNumber string    `json:"phone_number" bson:"phone_number"`
+	Address     []Address `json:"address" bson:"address"`
 }
 type UserResponse struct {
 	Username  string    `json:"username" bson:"username" `

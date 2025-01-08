@@ -193,3 +193,76 @@ func LogoutController(c *gin.Context) {
 	models.ManageResponse(c.Writer, "Logout successfuly ", http.StatusAccepted, nil, true)
 
 }
+
+func GetLoggedinUserData(c *gin.Context) {
+	logger.LogInfo("GetLoggedinUserData :: started")
+	userClaims, exists := c.Get("user")
+	if !exists {
+		logger.LogInfo("GetLoggedinUserData :: unauthorized..")
+		models.ManageResponse(c.Writer, "Unauthorized", http.StatusUnauthorized, nil, false)
+		return
+	}
+
+	claims, ok := userClaims.(jwt.MapClaims)
+	if !ok {
+		logger.LogInfo("GetLoggedinUserData :: unable to process claim")
+		models.ManageResponse(c.Writer, "Unable to process claim", http.StatusUnauthorized, nil, false)
+		return
+	}
+	username := claims["username"].(string)
+
+	resp, err := services.GetUserDetails(username)
+	if err != nil {
+		logger.LogError("GetLoggedinUserData :: Error in fetching the user details" + err.Error())
+		models.ManageResponse(c.Writer, " Error in fetching the user details", http.StatusBadRequest, nil, false)
+		return
+	}
+	models.ManageResponse(c.Writer, "Fetch Successfully", http.StatusOK, resp, true)
+	logger.LogInfo("GetLoggedinUserData :: end")
+}
+
+func UpdateLoggedInUser(c *gin.Context) {
+	logger.LogInfo("UpdateLoggedInUser :: started")
+	if c.Request.Method != "PATCH" {
+		logger.LogError("UpdateLoggedInUser :: error PATCH method required")
+		models.ManageResponse(c.Writer, "PATCH method required", http.StatusMethodNotAllowed, nil, false)
+		return
+	}
+
+	var update *models.UpdateUserAndProfile
+
+	// Decode the JSON body into the User struct
+	decoder := json.NewDecoder(c.Request.Body)
+	err := decoder.Decode(&update)
+	if err != nil {
+		logger.LogError("UpdateLoggedInUser :: error in decoding the body")
+		models.ManageResponse(c.Writer, "error in decoding the body", http.StatusBadRequest, nil, false)
+
+		return
+	}
+
+	logger.LogInfo("UpdateLoggedInUser :: started")
+	userClaims, exists := c.Get("user")
+	if !exists {
+		logger.LogInfo("UpdateLoggedInUser :: unauthorized..")
+		models.ManageResponse(c.Writer, "Unauthorized", http.StatusUnauthorized, nil, false)
+		return
+	}
+
+	claims, ok := userClaims.(jwt.MapClaims)
+	if !ok {
+		logger.LogInfo("UpdateLoggedInUser :: unable to process claim")
+		models.ManageResponse(c.Writer, "Unable to process claim", http.StatusUnauthorized, nil, false)
+		return
+	}
+	username := claims["username"].(string)
+
+	resp, err := services.UpdateLoggedInUser(update, username)
+	if err != nil {
+		logger.LogError("UpdateLoggedInUser :: Error in updating the user details" + err.Error())
+		models.ManageResponse(c.Writer, " Error in updating the user details", http.StatusBadRequest, nil, false)
+		return
+	}
+	models.ManageResponse(c.Writer, "update Successfully", http.StatusOK, resp, true)
+	logger.LogInfo("UpdateLoggedInUser :: end")
+}

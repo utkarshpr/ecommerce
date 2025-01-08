@@ -284,3 +284,53 @@ func UserFetchFromDB(username string) (*models.UserResponse, error) {
 	logger.LogInfo("UserFetchFromDB :: ended")
 	return &user, nil
 }
+
+func UpdateLoggedInUser(update *models.UpdateUserAndProfile, username string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user models.User
+
+	// Create MongoDB filter to find the user by username
+	filter := bson.M{"username": username}
+
+	logger.LogWarn(update.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(update.Password), bcrypt.DefaultCost)
+	if err != nil {
+		logger.LogError("error in GenerateFromPassword")
+		return nil, errors.New("failed to hash password")
+	}
+	update.Password = string(hashedPassword)
+
+	// Create MongoDB update document
+	updateDoc := bson.M{
+		"$set": bson.M{
+			///"password":     update.Password,
+			"email":        update.Email,
+			"first_name":   update.FirstName,
+			"last_name":    update.LastName,
+			"role":         update.Role,
+			"gender":       update.Gender,
+			"phone_number": update.PhoneNumber,
+			"address":      update.Address,
+		},
+	}
+
+	// Update the user in the database
+	err = userCollection.FindOneAndUpdate(ctx, filter, updateDoc).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("user with username  not found")
+		}
+		return nil, errors.New("error updating user: " + username)
+	}
+
+	// Return the updated user
+	err = userCollection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, errors.New("error retrieving updated user: " + err.Error())
+	}
+
+	return &user, nil
+
+}

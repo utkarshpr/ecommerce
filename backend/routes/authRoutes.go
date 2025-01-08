@@ -28,6 +28,14 @@ func AuthRoutes(r *gin.Engine) {
 				// Call SignUpController with ResponseWriter and Request
 				controllers.LogoutController(c)
 			})
+			auth.GET("getUserData", func(c *gin.Context) {
+				controllers.GetLoggedinUserData(c)
+			})
+			auth.PATCH("update", func(c *gin.Context) {
+				controllers.UpdateLoggedInUser(c)
+			})
+
 		}
+
 	}
 }

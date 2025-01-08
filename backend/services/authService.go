@@ -52,3 +52,25 @@ func LogoutUser(username string) error {
 	logger.LogInfo("LogoutUser service :: ended")
 	return nil
 }
+
+func GetUserDetails(username string) (*models.User, error) {
+	logger.LogInfo("GetUserDetails serv :: started")
+	resp, err := repo.FetchUserByUsername(username)
+	if err != nil {
+		logger.LogError("GetUserDetails serv error from repo " + err.Error())
+		return nil, err
+	}
+	logger.LogInfo("GetUserDetails serv:: started")
+	return resp, nil
+}
+
+func UpdateLoggedInUser(update *models.UpdateUserAndProfile, username string) (*models.User, error) {
+	logger.LogInfo("UpdateLoggedInUser serv :: started")
+	resp, err := repo.UpdateLoggedInUser(update, username)
+	if err != nil {
+		logger.LogError("UpdateLoggedInUser serv error from repo " + err.Error())
+		return nil, err
+	}
+	logger.LogInfo("UpdateLoggedInUser serv:: started")
+	return resp, nil
+}

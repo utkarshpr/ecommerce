@@ -9,12 +9,13 @@ const Home = () => {
     severity: "",
     message: "",
   });
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
     // Auto-dismiss alert after 5 seconds
     useEffect(() => {
       if (alert.message) {
         const timer = setTimeout(() => {
           setAlert({ severity: "", message: "" });
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
       }
     }, [alert]);
@@ -52,6 +53,17 @@ const Home = () => {
     fetchProducts();
   }, []);
 
+  // Handle search query change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter products based on the search query
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -61,13 +73,26 @@ const Home = () => {
   }
 
   return (
+    <>
+     {/* Alert Component */}
+     {alert.message && <Alerts severity={alert.severity} message={alert.message} />}
+
+    <div className="max-w-3xl mx-auto mb-8 mt-3">
+  <input
+    type="text"
+    placeholder="Search for products..."
+    value={searchQuery}
+    onChange={handleSearchChange}
+    className="w-full px-6 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+  />
+</div>
+
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      {/* Alert Component */}
-      {alert.message && <Alerts severity={alert.severity} message={alert.message} />}
+     
 
       {/* Product List */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
             className="group relative bg-white p-6 rounded-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 duration-300"
@@ -94,6 +119,7 @@ const Home = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 
