@@ -6,7 +6,8 @@ const CartContext = createContext();
 // CartContextProvider to wrap the app and provide cart state
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]); // Store cart as an array of { product_id, quantity, is_special_request, special_request_details }
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Manage the login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [quantity,setQuantity]=useState(0)
 
   const getTokenFromCookies = () => {
     const match = document.cookie.match('(^|;)\\s*' + 'authToken' + '=([^;]+)');
@@ -25,7 +26,7 @@ export const CartProvider = ({ children }) => {
         });
         const result = await response.json();
         if (result.Status) {
-            console.log(result);
+           console.log(result.data);
             
           setCart(result.data.orders); // Store the fetched cart data (orders array) in the state
         }
@@ -37,7 +38,7 @@ export const CartProvider = ({ children }) => {
 
 
   const getCartItemCount = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cart.reduce((total, item) => total + parseInt(item.quantity, 10), 0);
   };
 
   useEffect(() => {

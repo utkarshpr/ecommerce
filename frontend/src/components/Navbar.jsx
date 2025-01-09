@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, user, login } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
+  const { cart, getCartItemCount } = useCart();  // Get cart data and item count from CartContext
   const [showDropdown, setShowDropdown] = useState(false); // Dropdown visibility
   const [showModal, setShowModal] = useState(false); // Logout confirmation modal visibility
-  const [cartItemCount, setCartItemCount] = useState(0); // Track number of items in the cart
   const navigate = useNavigate();
- 
+
   // Handle home navigation
   const handleHome = () => navigate('/');
 
@@ -37,6 +37,8 @@ const Navbar = () => {
     navigate('/cart'); // Navigate to the cart page
   };
 
+  // Get cart item count from CartContext
+  const cartItemCount = getCartItemCount();
   return (
     <nav className="bg-gray-800 text-white p-4 sticky top-0 z-10 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
@@ -47,27 +49,28 @@ const Navbar = () => {
         <div className="space-x-4 flex items-center">
           {/* Show cart icon and item count only when logged in */}
           {isLoggedIn && (
-            <div className="relative cursor-pointer" onClick={handleCart}>
-              <svg
-                className="w-8 h-8 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h18l-1.5 9H4.5L3 3zM6 19a2 2 0 114 0 2 2 0 01-4 0zm12 0a2 2 0 114 0 2 2 0 01-4 0z"
-                />
-              </svg>
-              {cartItemCount > 0 && (
-                <span className="absolute top-0 right-0 rounded-full bg-red-500 text-white text-xs px-2 py-1">
-                  {cartItemCount}
-                </span>
-              )}
-            </div>
+           <div className="relative cursor-pointer" onClick={handleCart}>
+           <svg
+             className="w-8 h-8 text-white"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+           >
+             <path
+               strokeLinecap="round"
+               strokeLinejoin="round"
+               strokeWidth="2"
+               d="M3 3h18l-1.5 9H4.5L3 3zM6 19a2 2 0 114 0 2 2 0 01-4 0zm12 0a2 2 0 114 0 2 2 0 01-4 0z"
+             />
+           </svg>
+           {cartItemCount > 0 && (
+             <span className="absolute bottom-0 left-1/2 transform -translate-x-8 -translate-y-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full mt-1">
+               {cartItemCount}
+             </span>
+           )}
+         </div>
+         
           )}
 
           {/* Conditional render based on authentication */}
