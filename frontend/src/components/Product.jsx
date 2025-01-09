@@ -4,27 +4,26 @@ import { useAuth } from "./AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const ProductDetail = () => {
-    const { id } = useParams(); // Get the product ID from the URL
-    const { isLoggedIn, user } = useAuth();
-    const navigate = useNavigate();
+  const { id } = useParams(); // Get the product ID from the URL
+  const { isLoggedIn, user } = useAuth();
+  const navigate = useNavigate();
+  const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const location = useLocation();
 
+  useEffect(() => {
+    const { action } = location.state || {};
 
-    const location = useLocation();
+    if (action === "addToCart") {
+      // Perform Add to Cart logic
+      setAlert({ severity: "success", message: "Added to cart!" });
+    } else if (action === "buyNow") {
+      // Perform Buy Now logic
+      setAlert({ severity: "success", message: "Proceeding to checkout!" });
+      navigate("/checkout");
+    }
+  }, [location.state]);
 
-    useEffect(() => {
-      const { action } = location.state || {};
-    
-      if (action === "addToCart") {
-        // Perform Add to Cart logic
-        setAlert({ severity: "success", message: "Added to cart!" });
-      } else if (action === "buyNow") {
-        // Perform Buy Now logic
-        setAlert({ severity: "success", message: "Proceeding to checkout!" });
-        navigate("/checkout");
-      }
-    }, [location.state]);
-    
-    
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({
@@ -60,7 +59,6 @@ const ProductDetail = () => {
           throw new Error(`Error: ${response.statusText}`);
         }
         const { data } = await response.json();
-        
 
         setProduct(data);
         setAlert({
@@ -96,7 +94,10 @@ const ProductDetail = () => {
   const handleAction = (action) => {
     if (!isLoggedIn) {
       // Redirect to login with 'from' and 'action'
-      console.log("Navigating to login with state:", { from: `/product/${id}`, action });
+      console.log("Navigating to login with state:", {
+        from: `/product/${id}`,
+        action,
+      });
 
       navigate("/login", {
         state: { from: `/product/${id}`, action },
@@ -104,14 +105,58 @@ const ProductDetail = () => {
     } else {
       if (action === "addToCart") {
         setAlert({ severity: "success", message: "Added to cart!" });
+        setShowQuantityModal(true);
       } else if (action === "buyNow") {
         setAlert({ severity: "success", message: "Proceeding to checkout!" });
         navigate("/checkout");
       }
     }
   };
-  
-  
+
+  // add to cart 
+
+  const getTokenFromCookies = () => {
+    const match = document.cookie.match('(^|;)\\s*' + 'authToken' + '=([^;]+)');
+    return match ? match[2] : null;
+  }; 
+
+  const handleSubmitQuantity = async () => {
+    
+    const requestData = {
+      orders: [
+        {
+          product_id: product.id,
+          quantity: quantity.toString(),
+          is_special_request: false,
+        },
+      ],
+      added_at: new Date().toISOString(),
+    };
+
+    console.log(requestData);
+    
+    const token = getTokenFromCookies(); // Retrieve the authToken from cookies
+    try {
+      const response = await fetch("http://localhost:8081/cart/addToCart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        setAlert({ severity: "success", message: "Added to cart!" });
+        setShowQuantityModal(false); // Close the modal
+      } else {
+        setAlert({ severity: "error", message: "Failed to add to cart." });
+      }
+    } catch (error) {
+      setAlert({ severity: "error", message: `Error: ${error.message}` });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -121,7 +166,7 @@ const ProductDetail = () => {
     );
   }
   const usdToInr = 83; // Example exchange rate, update as per current rate
-  const priceInINR = (product.price * usdToInr).toFixed(2); 
+  const priceInINR = (product.price * usdToInr).toFixed(2);
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Alert Component */}
@@ -132,31 +177,30 @@ const ProductDetail = () => {
       {/* Main Content */}
       {product && (
         <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-       {/* Carousel Section */}
-<div className="relative w-full h-96">
-  <div className="overflow-hidden w-full h-full">
-    <img
-      src={product.MediaURL[currentImageIndex]}
-      alt={product.name}
-      className="w-full h-full object-cover object-center transition-transform duration-500 transform hover:scale-110"
-    />
-  </div>
-  {product.MediaURL.length > 1 && (
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-      {product.MediaURL.map((_, index) => (
-        <span
-          key={index}
-          className={`w-3 h-3 rounded-full ${
-            index === currentImageIndex
-              ? "bg-blue-600"
-              : "bg-gray-300 hover:bg-blue-400"
-          } transition duration-300`}
-        ></span>
-      ))}
-    </div>
-  )}
-</div>
-
+          {/* Carousel Section */}
+          <div className="relative w-full h-96">
+            <div className="overflow-hidden w-full h-full">
+              <img
+                src={product.MediaURL[currentImageIndex]}
+                alt={product.name}
+                className="w-full h-full object-cover object-center transition-transform duration-500 transform hover:scale-110"
+              />
+            </div>
+            {product.MediaURL.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                {product.MediaURL.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`w-3 h-3 rounded-full ${
+                      index === currentImageIndex
+                        ? "bg-blue-600"
+                        : "bg-gray-300 hover:bg-blue-400"
+                    } transition duration-300`}
+                  ></span>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Product Details Section */}
           <div className="p-6 md:p-10">
@@ -202,7 +246,7 @@ const ProductDetail = () => {
 
             <div className="flex flex-wrap items-center mt-6 space-x-6">
               <p className="text-gray-900 font-semibold text-xl md:text-2xl">
-              ₹{priceInINR}
+                ₹{priceInINR}
               </p>
               <span className="ml-4 text-sm text-gray-500">
                 ({product.quantity} in stock)
@@ -234,14 +278,16 @@ const ProductDetail = () => {
 
             {/* Buttons */}
             <div className="flex justify-center gap-6 mt-8">
-              <button 
-              onClick={() => handleAction("addToCart")}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
+              <button
+                onClick={() => handleAction("addToCart")}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300"
+              >
                 Add to Cart
               </button>
               <button
-              onClick={() => handleAction("buyNow")}
-               className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
+                onClick={() => handleAction("buyNow")}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300"
+              >
                 Buy Now
               </button>
             </div>
@@ -321,6 +367,29 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
+      {/* Quantity Modal */}
+      {showQuantityModal && (
+          <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+              <h2 className="text-2xl font-semibold mb-4">Enter Quantity</h2>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                min="1"
+                className="border border-gray-300 p-2 w-full mb-4"
+              />
+              <div className="flex justify-between">
+                <button onClick={() => setShowQuantityModal(false)} className="bg-red-600 text-white py-2 px-4 rounded-lg">
+                  Cancel
+                </button>
+                <button onClick={handleSubmitQuantity} className="bg-blue-600 text-white py-2 px-4 rounded-lg">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

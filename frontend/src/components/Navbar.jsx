@@ -3,24 +3,37 @@ import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, user,login } = useAuth();
+  const { isLoggedIn, logout, user, login } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false); // Dropdown visibility
   const [showModal, setShowModal] = useState(false); // Logout confirmation modal visibility
+  const [cartItemCount, setCartItemCount] = useState(0); // Track number of items in the cart
   const navigate = useNavigate();
 
+  // Handle home navigation
   const handleHome = () => navigate('/');
+
+  // Handle profile navigation
   const handleProfile = () => {
     navigate(`/profile/${user?.id}`);
     setShowDropdown(false); // Close dropdown
   };
+
+  // Handle notifications navigation
   const handleNotifications = () => {
     navigate('/notifications');
     setShowDropdown(false); // Close dropdown
   };
+
+  // Handle logout
   const handleLogout = async () => {
-    setShowModal(false)
+    setShowModal(false);
     logout();
     navigate('/login');
+  };
+
+  // Handle cart page navigation
+  const handleCart = () => {
+    navigate('/cart'); // Navigate to the cart page
   };
 
   return (
@@ -31,10 +44,36 @@ const Navbar = () => {
         </div>
 
         <div className="space-x-4 flex items-center">
+          {/* Show cart icon and item count only when logged in */}
+          {isLoggedIn && (
+            <div className="relative cursor-pointer" onClick={handleCart}>
+              <svg
+                className="w-8 h-8 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 3h18l-1.5 9H4.5L3 3zM6 19a2 2 0 114 0 2 2 0 01-4 0zm12 0a2 2 0 114 0 2 2 0 01-4 0z"
+                />
+              </svg>
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 rounded-full bg-red-500 text-white text-xs px-2 py-1">
+                  {cartItemCount}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Conditional render based on authentication */}
           {!isLoggedIn ? (
             <>
               <button
-                onClick={()=> navigate('/login')}
+                onClick={() => navigate('/login')}
                 className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
               >
                 Login
@@ -85,6 +124,7 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* Logout Confirmation Modal */}
         {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg">
