@@ -63,6 +63,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (isLoggedIn) {
       fetchUserData(); // Fetch user data after logging in
+      
     }
   }, [isLoggedIn]);
 

@@ -14,5 +14,8 @@ func CartRoute(r *gin.Engine) {
 		cart.POST("/addToCart", func(c *gin.Context) {
 			controllers.AddToCartController(c)
 		})
+		cart.GET("/getAll", func(c *gin.Context) {
+			controllers.GetCartItemsController(c)
+		})
 	}
 }

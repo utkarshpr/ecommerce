@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import Alerts from "../Fragments/Alert";
 import { useAuth } from "./AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCart } from "./CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams(); // Get the product ID from the URL
   const { isLoggedIn, user } = useAuth();
+  const { fetchCartItemsOnDemand } = useCart(); 
   const navigate = useNavigate();
   const [showQuantityModal, setShowQuantityModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -149,6 +151,7 @@ const ProductDetail = () => {
       if (response.ok) {
         setAlert({ severity: "success", message: "Added to cart!" });
         setShowQuantityModal(false); // Close the modal
+        fetchCartItemsOnDemand()
       } else {
         setAlert({ severity: "error", message: "Failed to add to cart." });
       }

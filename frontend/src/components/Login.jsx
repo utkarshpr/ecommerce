@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import Alerts from "../Fragments/Alert";
+import { useCart } from "./CartContext";
 
 const Login = () => {
   const { login } = useAuth();
+  const { setIsLoggedIn } = useCart(); 
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     username: "",
@@ -40,65 +42,7 @@ const Login = () => {
     });
   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
 
-//     try {
-//       const response = await fetch("http://localhost:8081/auth/login", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(credentials),
-//       });
-
-//       if (!response.ok) {
-//         const data = await response.json();
-//         setAlert({
-//           severity: "error",
-//           message: data.message || "Failed to login",
-//         });
-//       } else {
-//         const data = await response.json();
-//         if (data.Status) {
-//           // Save tokens in cookies
-//           document.cookie = `authToken=${data.data.token}; path=/; Secure; SameSite=Strict`;
-//           document.cookie = `refreshToken=${data.data.refreshtoken}; path=/; Secure; SameSite=Strict`;
-
-//           // Call login to update state in context
-//           login();
-
-//           setAlert({
-//             severity: "success",
-//             message: "Login successful! Redirecting...",
-//           });
-
-//         // Redirect to home page after a short delay
-// const { state } = location || {};
-// const { from, action } = state || {};
-
-// console.log("AFTER login");
-// console.log("From:", from);
-// console.log("Action:", action);
-
-// setTimeout(() => {
-//   if (from) {
-//     navigate(from, { state: { action } });
-//   } else {
-//     navigate("/home");
-//   }
-// }, 1500);
-//         } else {
-//           setAlert({
-//             severity: "error",
-//             message: "Login failed",
-//           });
-//         }
-//       }
-//     } catch (error) {
-//       setError("An error occurred during login");
-//     }
-//   };
 const location = useLocation();
 console.log("Location state in Login:", location.state);
 
@@ -123,7 +67,7 @@ const handleSubmit = async (e) => {
         document.cookie = `refreshToken=${data.data.refreshtoken}; path=/; Secure; SameSite=Strict`;
 
         login(); // Update context state
-
+        setIsLoggedIn(true)
         setAlert({
           severity: "success",
           message: "Login successful! Redirecting...",

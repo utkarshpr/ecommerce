@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from './CartContext';
 
 const Navbar = () => {
   const { isLoggedIn, logout, user, login } = useAuth();
@@ -8,7 +9,7 @@ const Navbar = () => {
   const [showModal, setShowModal] = useState(false); // Logout confirmation modal visibility
   const [cartItemCount, setCartItemCount] = useState(0); // Track number of items in the cart
   const navigate = useNavigate();
-
+ 
   // Handle home navigation
   const handleHome = () => navigate('/');
 

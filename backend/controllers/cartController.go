@@ -57,3 +57,42 @@ func AddToCartController(c *gin.Context) {
 	logger.LogInfo("AddToCartController :: end")
 
 }
+
+func GetCartItemsController(c *gin.Context) {
+	logger.LogInfo("GetCartItemsController :: started")
+
+	// Check if the method is GET
+	if c.Request.Method != "GET" {
+		logger.LogError("GetCartItemsController :: GET method is required")
+		models.ManageResponse(c.Writer, "GET method is required", http.StatusMethodNotAllowed, nil, false)
+		return
+	}
+
+	// Retrieve user claims from the context
+	userClaims, exists := c.Get("user")
+	if !exists {
+		logger.LogInfo("GetCartItemsController :: unauthorized..")
+		models.ManageResponse(c.Writer, "Unauthorized", http.StatusUnauthorized, nil, false)
+		return
+	}
+
+	claims, ok := userClaims.(jwt.MapClaims)
+	if !ok {
+		logger.LogInfo("GetCartItemsController :: unable to process claim")
+		models.ManageResponse(c.Writer, "Unable to process claim", http.StatusUnauthorized, nil, false)
+		return
+	}
+	username := claims["username"].(string)
+
+	// Fetch cart items from the service
+	cartData, err := services.GetCartItems(username)
+	if err != nil {
+		logger.LogError("GetCartItemsController :: unable to fetch cart items")
+		models.ManageResponse(c.Writer, "Unable to fetch cart items", http.StatusBadRequest, nil, false)
+		return
+	}
+
+	// Return cart data
+	models.ManageResponse(c.Writer, "Cart items fetched successfully", http.StatusOK, cartData, true)
+	logger.LogInfo("GetCartItemsController :: end")
+}

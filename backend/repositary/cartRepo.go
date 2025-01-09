@@ -12,44 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// func AddtoCart(cartItem *models.AddToCart) error {
-// 	logger.LogInfo("AddtoCart repo:: started ")
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	defer cancel()
-// 	// Check if cart for user already exists
-// 	var existingCart models.AddToCart
-// 	err := cartCollection.FindOne(ctx, bson.M{"for_user": cartItem.ForUser}).Decode(&existingCart)
-// 	if err != nil && err != mongo.ErrNoDocuments {
-// 		// If we get an error other than "no document", log and return the error
-// 		logger.LogError("Error finding existing cart: " + err.Error())
-// 		return err
-// 	}
-
-// 	// If cart exists, update it, otherwise, create a new one
-// 	if err == mongo.ErrNoDocuments {
-// 		// No cart exists for the user, create a new one
-// 		cartItem.AddedAt = time.Now().Format(time.RFC3339) // Set the current timestamp
-// 		_, err := cartCollection.InsertOne(ctx, cartItem)
-// 		if err != nil {
-// 			logger.LogError("Error inserting new cart: " + err.Error())
-// 			return err
-// 		}
-// 	} else {
-// 		// Cart exists, update it
-// 		update := bson.M{
-// 			"$push": bson.M{"orders": bson.M{"$each": cartItem.Orders}},
-// 			"$set":  bson.M{"added_at": time.Now().Format(time.RFC3339)}, // Update the timestamp
-// 		}
-// 		_, err = cartCollection.UpdateOne(ctx, bson.M{"for_user": cartItem.ForUser}, update)
-// 		if err != nil {
-// 			logger.LogError("Error updating existing cart: " + err.Error())
-// 			return err
-// 		}
-// 	}
-
-//		logger.LogInfo("AddtoCart repo:: end ")
-//		return nil
-//	}
 func AddtoCart(cartItem *models.AddToCart) error {
 	logger.LogInfo("AddtoCart repo:: started")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -100,71 +62,23 @@ func AddtoCart(cartItem *models.AddToCart) error {
 	return nil
 }
 
-// func AddtoCart(cartItem *models.AddToCart) error {
-// 	logger.LogInfo("AddtoCart repo:: started")
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	defer cancel()
+func GetCartItems(username string) (*models.AddToCart, error) {
+	logger.LogInfo("GetCartItems repo :: started")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-// 	// Normalize existing cart data with aggregation
-// 	pipeline := bson.A{
-// 		bson.M{
-// 			"$match": bson.M{"for_user": cartItem.ForUser},
-// 		},
-// 		bson.M{
-// 			"$project": bson.M{
-// 				"for_user": "$for_user",
-// 				"added_at": "$added_at",
-// 				"orders": bson.M{
-// 					"$map": bson.M{
-// 						"input": "$orders",
-// 						"as":    "order",
-// 						"in": bson.M{
-// 							"product_id":              "$$order.product_id",
-// 							"quantity":                bson.M{"$toString": "$$order.quantity"}, // Convert quantity to string
-// 							"is_special_request":      "$$order.is_special_request",
-// 							"special_request_details": "$$order.special_request_details",
-// 						},
-// 					},
-// 				},
-// 			},
-// 		},
-// 	}
+	// Retrieve the cart document for the user
+	var cart models.AddToCart
+	err := cartCollection.FindOne(ctx, bson.M{"for_user": username}).Decode(&cart)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// Return an empty cart if no cart exists for the user
+			return &models.AddToCart{ForUser: username, Orders: []models.Order{}}, nil
+		}
+		logger.LogError("Error finding cart: " + err.Error())
+		return nil, err
+	}
 
-// 	// Perform aggregation query
-// 	cursor, err := cartCollection.Aggregate(ctx, pipeline)
-// 	if err != nil {
-// 		logger.LogError("Error finding existing cart with normalized data: " + err.Error())
-// 		return err
-// 	}
-
-// 	var normalizedCart []models.AddToCart
-// 	if err = cursor.All(ctx, &normalizedCart); err != nil {
-// 		logger.LogError("Error decoding normalized cart data: " + err.Error())
-// 		return err
-// 	}
-
-// 	// Check if a cart exists
-// 	if len(normalizedCart) == 0 {
-// 		// No cart exists for the user, create a new one
-// 		cartItem.AddedAt = time.Now().Format(time.RFC3339) // Set the current timestamp
-// 		_, err := cartCollection.InsertOne(ctx, cartItem)
-// 		if err != nil {
-// 			logger.LogError("Error inserting new cart: " + err.Error())
-// 			return err
-// 		}
-// 	} else {
-// 		// Cart exists, update it
-// 		update := bson.M{
-// 			"$push": bson.M{"orders": bson.M{"$each": cartItem.Orders}},
-// 			"$set":  bson.M{"added_at": time.Now().Format(time.RFC3339)}, // Update the timestamp
-// 		}
-// 		_, err = cartCollection.UpdateOne(ctx, bson.M{"for_user": cartItem.ForUser}, update)
-// 		if err != nil {
-// 			logger.LogError("Error updating existing cart: " + err.Error())
-// 			return err
-// 		}
-// 	}
-
-// 	logger.LogInfo("AddtoCart repo:: end")
-// 	return nil
-// }
+	logger.LogInfo("GetCartItems repo :: end")
+	return &cart, nil
+}
