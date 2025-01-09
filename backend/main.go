@@ -32,6 +32,7 @@ func main() {
 	}))
 	routes.AuthRoutes(r)
 	routes.ProductRoute(r)
+	routes.CartRoute(r)
 	port := os.Getenv("PORT")
 	err := r.Run(port)
 	if err != nil {
