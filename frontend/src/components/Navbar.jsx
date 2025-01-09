@@ -3,7 +3,7 @@ import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, user } = useAuth();
+  const { isLoggedIn, logout, user,login } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false); // Dropdown visibility
   const [showModal, setShowModal] = useState(false); // Logout confirmation modal visibility
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const Navbar = () => {
     setShowDropdown(false); // Close dropdown
   };
   const handleLogout = async () => {
+    setShowModal(false)
     logout();
     navigate('/login');
   };
@@ -33,7 +34,7 @@ const Navbar = () => {
           {!isLoggedIn ? (
             <>
               <button
-                onClick={() => navigate('/login')}
+                onClick={()=> navigate('/login')}
                 className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
               >
                 Login

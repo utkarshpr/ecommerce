@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Alerts from "../Fragments/Alert";
 
 const Login = () => {
@@ -10,6 +10,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+
 
   const [error, setError] = useState("");
   const [alert, setAlert] = useState({
@@ -39,52 +40,117 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:8081/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
+//     try {
+//       const response = await fetch("http://localhost:8081/auth/login", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(credentials),
+//       });
 
-      if (!response.ok) {
-        const data = await response.json();
+//       if (!response.ok) {
+//         const data = await response.json();
+//         setAlert({
+//           severity: "error",
+//           message: data.message || "Failed to login",
+//         });
+//       } else {
+//         const data = await response.json();
+//         if (data.Status) {
+//           // Save tokens in cookies
+//           document.cookie = `authToken=${data.data.token}; path=/; Secure; SameSite=Strict`;
+//           document.cookie = `refreshToken=${data.data.refreshtoken}; path=/; Secure; SameSite=Strict`;
+
+//           // Call login to update state in context
+//           login();
+
+//           setAlert({
+//             severity: "success",
+//             message: "Login successful! Redirecting...",
+//           });
+
+//         // Redirect to home page after a short delay
+// const { state } = location || {};
+// const { from, action } = state || {};
+
+// console.log("AFTER login");
+// console.log("From:", from);
+// console.log("Action:", action);
+
+// setTimeout(() => {
+//   if (from) {
+//     navigate(from, { state: { action } });
+//   } else {
+//     navigate("/home");
+//   }
+// }, 1500);
+//         } else {
+//           setAlert({
+//             severity: "error",
+//             message: "Login failed",
+//           });
+//         }
+//       }
+//     } catch (error) {
+//       setError("An error occurred during login");
+//     }
+//   };
+const location = useLocation();
+console.log("Location state in Login:", location.state);
+
+const { from } = location.state || { from: "/home" };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    // Login API call
+    const response = await fetch("http://localhost:8081/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.Status) {
+        document.cookie = `authToken=${data.data.token}; path=/; Secure; SameSite=Strict`;
+        document.cookie = `refreshToken=${data.data.refreshtoken}; path=/; Secure; SameSite=Strict`;
+
+        login(); // Update context state
+
         setAlert({
-          severity: "error",
-          message: data.message || "Failed to login",
+          severity: "success",
+          message: "Login successful! Redirecting...",
         });
-      } else {
-        const data = await response.json();
-        if (data.Status) {
-          // Save tokens in cookies
-          document.cookie = `authToken=${data.data.token}; path=/; Secure; SameSite=Strict`;
-          document.cookie = `refreshToken=${data.data.refreshtoken}; path=/; Secure; SameSite=Strict`;
 
-          // Call login to update state in context
-          login();
-
-          setAlert({
-            severity: "success",
-            message: "Login successful! Redirecting...",
-          });
-
-          // Redirect to home page after a short delay
-          setTimeout(() => navigate("/home"), 1500);
-        } else {
-          setAlert({
-            severity: "error",
-            message: "Login failed",
-          });
-        }
+        // Redirect back to the originating page
+       
+        setTimeout(() => {
+          navigate(from); // Use `from` for redirection
+        }, 1500);
       }
-    } catch (error) {
-      setError("An error occurred during login");
+    } else {
+      const data = await response.json();
+      setAlert({
+        severity: "error",
+        message: data.message || "Failed to login",
+      });
     }
-  };
+  } catch (error) {
+    setAlert({
+      severity: "error",
+      message: "An error occurred during login",
+    });
+  }
+};
+
+
 
   return (
     <div className="">

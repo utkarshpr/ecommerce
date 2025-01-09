@@ -1,10 +1,29 @@
 import React, { useState, useEffect } from "react";
 import Alerts from "../Fragments/Alert";
-import { useParams } from "react-router-dom";
+import { useAuth } from "./AuthContext";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const ProductDetail = () => {
     const { id } = useParams(); // Get the product ID from the URL
-    console.log("PRODUCT PAGE ",id);
+    const { isLoggedIn, user } = useAuth();
+    const navigate = useNavigate();
+
+
+    const location = useLocation();
+
+    useEffect(() => {
+      const { action } = location.state || {};
+    
+      if (action === "addToCart") {
+        // Perform Add to Cart logic
+        setAlert({ severity: "success", message: "Added to cart!" });
+      } else if (action === "buyNow") {
+        // Perform Buy Now logic
+        setAlert({ severity: "success", message: "Proceeding to checkout!" });
+        navigate("/checkout");
+      }
+    }, [location.state]);
+    
     
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +60,7 @@ const ProductDetail = () => {
           throw new Error(`Error: ${response.statusText}`);
         }
         const { data } = await response.json();
-        console.log(data);
+        
 
         setProduct(data);
         setAlert({
@@ -73,6 +92,26 @@ const ProductDetail = () => {
       return () => clearInterval(interval); // Cleanup interval
     }
   }, [product]);
+
+  const handleAction = (action) => {
+    if (!isLoggedIn) {
+      // Redirect to login with 'from' and 'action'
+      console.log("Navigating to login with state:", { from: `/product/${id}`, action });
+
+      navigate("/login", {
+        state: { from: `/product/${id}`, action },
+      });
+    } else {
+      if (action === "addToCart") {
+        setAlert({ severity: "success", message: "Added to cart!" });
+      } else if (action === "buyNow") {
+        setAlert({ severity: "success", message: "Proceeding to checkout!" });
+        navigate("/checkout");
+      }
+    }
+  };
+  
+  
 
   if (loading) {
     return (
@@ -195,10 +234,14 @@ const ProductDetail = () => {
 
             {/* Buttons */}
             <div className="flex justify-center gap-6 mt-8">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
+              <button 
+              onClick={() => handleAction("addToCart")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
                 Add to Cart
               </button>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
+              <button
+              onClick={() => handleAction("buyNow")}
+               className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
                 Buy Now
               </button>
             </div>
